@@ -31,7 +31,6 @@ public class PrincipalConListas {
             if (item instanceof Pelicula pelicula && pelicula.getClasificacion() > 2){
                 System.out.println(pelicula.getClasificacion());
             }
-
         }
 
         ArrayList<String> listaDeArtistas = new ArrayList<>();
