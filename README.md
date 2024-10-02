@@ -23,7 +23,4 @@ Este proyecto es parte de la serie de aulas donde aprendimos sobre el manejo de 
 - **Flexibilización de la ordenación de listas** usando el método `sort` de la interface `List`, pasando un criterio de ordenación como parámetro.
 - **Uso de la interface `List` y sus diferentes implementaciones** como `ArrayList` y `LinkedList`, ganando polimorfismo y flexibilidad.
   
-## Requisitos
-
-- **Java 11**
 
