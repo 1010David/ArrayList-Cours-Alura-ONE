@@ -1,45 +1,81 @@
 package com.alura.screenmatch.principal;
 
+import com.alura.screenmatch.excepcion.ErrorEnConversionDeDuracionException;
 import com.alura.screenmatch.modelos.TitulboOmd;
 import com.alura.screenmatch.modelos.Titulo;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class MainConBusqueda {
     public static void main(String[] args) throws IOException, InterruptedException {
         Scanner lectura = new Scanner(System.in);
-        System.out.println("Escriba el nombre de la peli: ");
-        var busqueda = lectura.nextLine();
-
-        String direccion = "https://www.omdbapi.com/?t="+busqueda+"&apikey=e213ac13";
-
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(direccion))
-                .build();
-
-        HttpResponse<String> response = client
-                .send(request, HttpResponse.BodyHandlers.ofString());
-
-        String json = response.body();
-        System.out.println(json);
+        List<Titulo> titulos = new ArrayList<>();
 
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
-                .create();;
+                .create();
 
-        TitulboOmd miTituloOmbd = gson.fromJson(json, TitulboOmd.class);
-        System.out.println(miTituloOmbd);
-        Titulo miTitulo = new Titulo(miTituloOmbd);
-        System.out.println(miTitulo);
+        while (true){
+            System.out.println("Escriba el nombre de la peli: ");
+            var busqueda = lectura.nextLine();
+
+            if (busqueda.equalsIgnoreCase("salir")){
+                break;
+            }
+
+            String direccion = "https://www.omdbapi.com/?t="+
+                    busqueda.replace(" ","+")+
+                    "&apikey=e213ac13";
+
+            try {
+
+                HttpClient client = HttpClient.newHttpClient();
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(direccion))
+                        .build();
+
+                HttpResponse<String> response = client
+                        .send(request, HttpResponse.BodyHandlers.ofString());
+
+                String json = response.body();
+                System.out.println(json);
+
+                TitulboOmd miTituloOmbd = gson.fromJson(json, TitulboOmd.class);
+                System.out.println(miTituloOmbd);
+
+                Titulo miTitulo = new Titulo(miTituloOmbd);
+                System.out.println("título convertido: " + miTitulo);
+
+                titulos.add(miTitulo);
+
+            }catch (NumberFormatException e){     //Manejando exccepciones
+                System.out.println("Error: ");
+                System.out.println(e.getMessage());
+            }catch (IllegalArgumentException e){
+                System.out.println("Error en URI! Verifique la dirección");
+            }catch (ErrorEnConversionDeDuracionException e){
+                System.out.println(e.getMensaje());
+            }
+        }
+
+        System.out.println(titulos);
+
+        FileWriter escritura = new FileWriter("titulos.json");
+        escritura.write(gson.toJson(titulos));
+        escritura.close();
+
+        System.out.println("Finalizó la ejecución");
 
     }
 }
