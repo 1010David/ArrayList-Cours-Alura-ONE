@@ -24,6 +24,7 @@ public class MainConBusqueda {
 
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
+                .setPrettyPrinting()
                 .create();
 
         while (true){
